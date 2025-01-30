@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sql_access_deployment
+  labels:
+    app: sql_access
+spec:
+  replicas: 1
+  selector:
+  matchLabels:
+    app: sql_access
+  template:
+    metadata:
+      labels:
+        sql_access
+    spec:
+      containers:
+      - name: sql_access
+        image: east01/sql_access_image:latest
+        ports:
+        - containerPort: 8921
+        # resources:
+        #   limits:
+        #     memory: 100Mi
+        #     cpu: 100m
+        #   requests:
+        #     memory: 100Mi
+        #     cpu: 100m
+        command: ["sh", "-c", "sleep infinity"]
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - 'key': 'nautilus.io/csu-tide'
+                'operator': 'In'
+                'values': ["true"]
+      tolerations:
+        - effect: NoSchedule
+          key: nautilus.io/csu-tidea
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql_access_service
+spec:
+  type: NodePort
+  selector:
+    app: sql_access
+  ports:
+    - protocol: TCP
+      port: 8921
+      targetPort: 
+      nodePort: 30100
