@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-deployment
+  labels:
+    app: node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+      - name: node
+        image: east01/sql_access_image:latest
+        ports:
+        - containerPort: 8921
+        env:
+        - name: SQL_SERVER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: node-config
+              key: sql-server-url
+        resources:
+          limits:
+            memory: 100Mi
+            cpu: 100m
+          requests:
+            memory: 100Mi
+            cpu: 100m
+        command: ["sh", "-c", "sleep infinity"]
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nautilus.io/csu-tide
+                operator: In
+                values: ["true"]
+      tolerations:
+        - effect: NoSchedule
+          key: nautilus.io/csu-tide
+          operator: Exists
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: node-ingress
+spec:
+  ingressClassName: haproxy
+  rules:
+  - host: pdbackend.nrp-nautilus.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: node-service
+            port:
+              number: 8921
+        path: /
+        pathType: Prefix
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-service
+spec:
+  type: ClusterIP
+  selector:
+    app: node
+  ports:
+    - protocol: TCP
+      port: 8921
+      targetPort: 8921

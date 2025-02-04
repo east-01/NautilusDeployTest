@@ -1,29 +1,29 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sql_server_deployment
+  name: sql-server-deployment
   labels:
-    app: sql_server
+    app: sql-server
 spec:
   replicas: 1
   selector:
-  matchLabels:
-    app: sql_server
+    matchLabels:
+      app: sql-server
   template:
     metadata:
       labels:
-        sql_server
+        app: sql-server
     spec:
       containers:
-      - name: sql_server
+      - name: sql-server
         image: mcr.microsoft.com/mssql/server
-        # resources:
-        #   limits:
-        #     memory: 100Mi
-        #     cpu: 100m
-        #   requests:
-        #     memory: 100Mi
-        #     cpu: 100m
+        resources:
+          limits:
+            memory: 2G
+            cpu: 2000m
+          requests:
+            memory: 2G
+            cpu: 2000m
         ports:
         - containerPort: 1433
         env:
@@ -34,7 +34,7 @@ spec:
         - name: MSSQL_SA_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: sql_server_secret
+              name: sql-server-secret
               key: MSSQL_SA_PASSWORD
         volumeMounts:
         - name: mssqldb
@@ -44,25 +44,25 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - 'key': 'nautilus.io/csu-tide'
-                'operator': 'In'
-                'values': ["true"]
+              - key: nautilus.io/csu-tide
+                operator: In
+                values: ["true"]
       tolerations:
         - effect: NoSchedule
-          key: nautilus.io/csu-tidea
+          key: nautilus.io/csu-tide
           operator: Exists
       volumes:
       - name: mssqldb
         persistentVolumeClaim:
-          claimName: sql_server_pvc
+          claimName: sql-server-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sql_server_service
+  name: sql-server-service
 spec:
   selector:
-    app: sql_server
+    app: sql-server
   ports:
     - protocol: TCP
       port: 1433

@@ -6,9 +6,9 @@ const { fetch, contains, insert } = require('./sqloperations')
 
 // SQL Server configuration
 const config = {
-	user: 'unity',
-	password: 'MoreLike_DataBass115!',
-	server: 'localhost',
+	user: 'sa',
+	password: process.env.SQL_SERVER_PASSWORD,
+	server: process.env.SQL_SERVER_URL,
 	database: 'testdb',
 	options: {
 		encrypt: true, // for Azure
@@ -50,5 +50,5 @@ app.post('/insert', express.json(), async (req, res) => {
 });
 
 app.listen(port, () => {
-	console.log(`Server running on port ${port}`);
+	console.log(`Server running on port ${port} with configuration ${JSON.stringify(config, null, 4)}`);
 });

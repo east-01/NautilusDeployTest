@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-config
+data:
+  sql-server-url: sql-server-service

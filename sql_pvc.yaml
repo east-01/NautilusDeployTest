@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: sql_server_pvc
+  name: sql-server-pvc
 spec:
-  storageClassName: rook-ceph-block
+  storageClassName: ceph-rook-tide
   accessModes:
   - ReadWriteOnce
   resources:

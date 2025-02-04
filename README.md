@@ -6,4 +6,6 @@ Currently, this is being deployed as an early Alpha state- it is NOT ready for p
 I'm setting this up as a pod with three containers in it.
 1. The SQL server container
 2. The SQL data retrieval node.js container
-3. The authentication container
+3. The authentication container (coming later- sql access required first)
+
+Also, the sql access portion needs to be rewritten. It was the first thing I wrote when I was learning about this stuff.
