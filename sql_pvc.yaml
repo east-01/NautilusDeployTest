@@ -3,9 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: sql-server-pvc
 spec:
-  storageClassName: ceph-rook-tide
+  storageClassName: rook-ceph-block-tide
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 10Gi

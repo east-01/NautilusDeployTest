@@ -14,16 +14,18 @@ spec:
       labels:
         app: sql-server
     spec:
+      securityContext:
+        fsGroup: 10001
       containers:
       - name: sql-server
         image: mcr.microsoft.com/mssql/server
         resources:
           limits:
-            memory: 2G
-            cpu: 2000m
+            memory: "6Gi"
+            cpu: "2000m"
           requests:
-            memory: 2G
-            cpu: 2000m
+            memory: "3Gi"
+            cpu: "1500m"
         ports:
         - containerPort: 1433
         env:
@@ -35,10 +37,13 @@ spec:
           valueFrom:
             secretKeyRef:
               name: sql-server-secret
-              key: MSSQL_SA_PASSWORD
+              key: sa-password
+        - name: MSSQL_MEMORY_LIMIT_MB
+          value: "4096"  # Limit SQL Server to 6GB
         volumeMounts:
         - name: mssqldb
           mountPath: /var/opt/mssql
+        # command: ["sh", "-c", "sleep infinity"]
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
